@@ -4,6 +4,8 @@ import (
 	"errors"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/baggage"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/semconv"
 	"go.opentelemetry.io/otel/trace"
 	"log"
@@ -29,6 +31,7 @@ func initTracer() func() {
 		}),
 		jaeger.WithSDK(&sdktrace.Config{DefaultSampler: sdktrace.AlwaysSample()}),
 	)
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -57,6 +60,8 @@ func helloHandler(w http.ResponseWriter, req *http.Request) {
 	log.Print(projectID.AsString())
 	span.SetAttributes(label.KeyValue{Key: "ProjectID", Value: projectID})
 	span.RecordError(errors.New("Error Test"))
+	span.SetStatus(codes.Ok,"normal error") // removes error status
+	span.RecordError(errors.New("Error Test")) // new error adds error status
 	span.AddEvent("writing response", trace.WithAttributes(label.String("content", "Hello World")))
 
 	time.Sleep(time.Second)

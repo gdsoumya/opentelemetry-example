@@ -3,6 +3,9 @@ package main
 import (
 	"context"
 	"go.opentelemetry.io/otel/baggage"
+	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/semconv"
+	"go.opentelemetry.io/otel/trace"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -13,6 +16,8 @@ import (
 	"go.opentelemetry.io/otel/label"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
+
+var tr = otel.Tracer("main")
 
 // initTracer creates a new trace provider instance and registers it as global trace provider.
 func initTracer() func() {
@@ -30,13 +35,14 @@ func initTracer() func() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
 	return flush
 }
 
 func main() {
 	flush := initTracer()
 	defer flush()
-	var tr = otel.Tracer("main")
+
 	ctx, span := tr.Start(context.Background(), "client-main")
 	defer span.End()
 
@@ -48,6 +54,10 @@ func makeRequest(ctx context.Context) {
 		Transport: otelhttp.NewTransport(http.DefaultTransport),
 	}
 	ctx = baggage.ContextWithValues(ctx, label.String("ProjectID", "1234"))
+
+	ctx, span := tr.Start(ctx, "say hello", trace.WithAttributes(semconv.PeerServiceKey.String("ExampleService")))
+	defer span.End()
+
 	req, err := http.NewRequestWithContext(ctx, "GET", "http://localhost:9000/hello", nil)
 	if err != nil {
 		panic(err)
