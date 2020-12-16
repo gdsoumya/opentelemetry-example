@@ -19,9 +19,9 @@ import (
 	"time"
 )
 
-type SockData struct{
+type SockData struct {
 	TraceData store.TraceData `json:"trace-data"`
-	OtherData string `json:"other-data"`
+	OtherData string          `json:"other-data"`
 }
 
 var tr = otel.Tracer("custom-sock-main")
@@ -63,13 +63,13 @@ func makeSockConnection(ctx context.Context) {
 
 	traceData := store.TraceData{}
 	traceData.Inject(ctx)
-	d, err:= json.Marshal(traceData)
+	d, err := json.Marshal(traceData)
 	if err != nil {
 		log.Fatal("marshal:", err)
 	}
 	req := http.Header{}
-	req.Set("trace",string(d))
-	log.Print(req,string(d))
+	req.Set("trace", string(d))
+	log.Print(req, string(d))
 	u := url.URL{Scheme: "ws", Host: "localhost:8000", Path: "/echo"}
 	log.Printf("connecting to %s", u.String())
 
@@ -81,9 +81,9 @@ func makeSockConnection(ctx context.Context) {
 
 	go listenToServer(ctx, c)
 
-	for i:=1;i<=2;i++ {
+	for i := 1; i <= 2; i++ {
 		sendDataToServer(ctx, c, "hello server "+string(rune(i)))
-		time.Sleep(5*time.Second)
+		time.Sleep(5 * time.Second)
 	}
 	//time.Sleep(100*time.Second)
 }
@@ -99,9 +99,9 @@ func listenToServer(ctx context.Context, c *websocket.Conn) {
 			return
 		}
 		sockData := SockData{}
-		err = json.Unmarshal(message,&sockData)
-		ctx1:=context.Background()
-		ctx1=sockData.TraceData.Extract(ctx1)
+		err = json.Unmarshal(message, &sockData)
+		ctx1 := context.Background()
+		ctx1 = sockData.TraceData.Extract(ctx1)
 		ctx1, span1 := tr.Start(ctx1, "received data from server")
 		if err != nil {
 			log.Println("err:", err)
@@ -114,10 +114,10 @@ func listenToServer(ctx context.Context, c *websocket.Conn) {
 	}
 }
 
-func sendDataToServer(ctx context.Context, c *websocket.Conn, data string){
+func sendDataToServer(ctx context.Context, c *websocket.Conn, data string) {
 	ctx, span := tr.Start(ctx, "talk to server")
 	defer span.End()
-	span.SetAttributes(label.String("message",data) )
+	span.SetAttributes(label.String("message", data))
 
 	traceData := store.TraceData{}
 	traceData.Inject(ctx)
@@ -131,4 +131,3 @@ func sendDataToServer(ctx context.Context, c *websocket.Conn, data string){
 		panic(err)
 	}
 }
-

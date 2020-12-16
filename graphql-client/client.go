@@ -46,11 +46,11 @@ func main() {
 
 	ctx, span := tr.Start(context.Background(), "client-main")
 	defer span.End()
-	payload:= `{"query":"mutation{createTodo(input:{text:\"hello\",userId:\"hui\"}){id text done user{id name}}}"}`
+	payload := `{"query":"mutation{createTodo(input:{text:\"hello\",userId:\"hui\"}){id text done user{id name}}}"}`
 
-	data, err := sendMutation(ctx, "http://localhost:8080/query",[]byte(payload))
-	if err!=nil{
-		log.Print("ERROR ",err)
+	data, err := sendMutation(ctx, "http://localhost:8080/query", []byte(payload))
+	if err != nil {
+		log.Print("ERROR ", err)
 	}
 	log.Print(data)
 }
@@ -63,7 +63,7 @@ func sendMutation(ctx context.Context, server string, payload []byte) (string, e
 	ctx, span := tr.Start(ctx, "say hello", trace.WithAttributes(semconv.PeerServiceKey.String("ExampleService")))
 	defer span.End()
 
-	req, err := http.NewRequestWithContext(ctx,"POST", server, bytes.NewBuffer(payload))
+	req, err := http.NewRequestWithContext(ctx, "POST", server, bytes.NewBuffer(payload))
 	if err != nil {
 		return "", err
 	}

@@ -31,15 +31,15 @@ func (r *mutationResolver) CreateTodo(cxt context.Context, input model.NewTodo) 
 	log.Print(projectID.AsString())
 	span.SetAttributes(label.KeyValue{Key: "ProjectID", Value: projectID})
 	span.RecordError(errors.New("Error Test"))
-	span.SetStatus(codes.Ok,"normal error") // removes error status
+	span.SetStatus(codes.Ok, "normal error")   // removes error status
 	span.RecordError(errors.New("Error Test")) // new error adds error status
 	span.AddEvent("writing response", trace.WithAttributes(label.String("content", "Hello World")))
 
-	user:= model.User{
+	user := model.User{
 		ID:   "12",
 		Name: "Hello",
 	}
-	todo:= model.Todo{
+	todo := model.Todo{
 		ID:   "1",
 		Text: "Hello",
 		Done: false,

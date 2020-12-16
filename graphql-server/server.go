@@ -12,7 +12,6 @@ import (
 	"github.com/gdsoumya/opentelemetry-example/graphql-server/graph"
 	"github.com/gdsoumya/opentelemetry-example/graphql-server/graph/generated"
 
-
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel/exporters/trace/jaeger"
 	"go.opentelemetry.io/otel/label"

@@ -48,7 +48,7 @@ func main() {
 }
 
 func helloHandler(w http.ResponseWriter, req *http.Request) {
-	time.Sleep(100*time.Millisecond)
+	time.Sleep(100 * time.Millisecond)
 	cxt := req.Context()
 	span := trace.SpanFromContext(cxt)
 	span.SetAttributes(semconv.HTTPRouteKey.String("hello"))
@@ -56,12 +56,12 @@ func helloHandler(w http.ResponseWriter, req *http.Request) {
 	var tracer = otel.Tracer("server")
 	cxt, span = tracer.Start(cxt, "server-span")
 	defer span.End()
-	time.Sleep(10*time.Millisecond)
+	time.Sleep(10 * time.Millisecond)
 	projectID := baggage.Value(cxt, "ProjectID")
 	log.Print("Propagated Baggage: ", projectID.AsString())
 	span.SetAttributes(label.KeyValue{Key: "ProjectID", Value: projectID})
 	span.RecordError(errors.New("Error Test"))
-	span.SetStatus(codes.Ok,"normal error") // removes error status
+	span.SetStatus(codes.Ok, "normal error")   // removes error status
 	span.RecordError(errors.New("Error Test")) // new error adds error status
 	span.AddEvent("writing response", trace.WithAttributes(label.String("content", "Hello World")))
 

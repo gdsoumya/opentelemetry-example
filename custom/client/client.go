@@ -19,6 +19,7 @@ import (
 )
 
 var tr = otel.Tracer("custom-main")
+
 const traceHeader = "trace"
 
 // initTracer creates a new trace provider instance and registers it as global trace provider.
@@ -62,7 +63,7 @@ func makeRequest(ctx context.Context) {
 	if err != nil {
 		panic(err)
 	}
-	if err = addTraceHeaders(ctx,req);err!=nil{
+	if err = addTraceHeaders(ctx, req); err != nil {
 		panic(err)
 	}
 
@@ -78,13 +79,13 @@ func makeRequest(ctx context.Context) {
 	log.Print(string(body))
 }
 
-func addTraceHeaders(ctx context.Context, req *http.Request)(error){
+func addTraceHeaders(ctx context.Context, req *http.Request) error {
 	traceData := store.TraceData{}
 	traceData.Inject(ctx)
-	data, err:= json.Marshal(traceData)
-	if err!=nil{
+	data, err := json.Marshal(traceData)
+	if err != nil {
 		return err
 	}
-	req.Header.Set(traceHeader,string(data))
+	req.Header.Set(traceHeader, string(data))
 	return nil
 }
