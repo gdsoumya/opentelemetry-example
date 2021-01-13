@@ -2,6 +2,25 @@
 
 This repo contains examples for integrating and using open-telemetry with jaeger collector and golang.
 
+## Setting up Jaeger:
+
+1. Local Dev with Docker container
+```
+$ docker run -d --name jaeger \
+  -e COLLECTOR_ZIPKIN_HTTP_PORT=9411 \
+  -p 5775:5775/udp \
+  -p 6831:6831/udp \
+  -p 6832:6832/udp \
+  -p 5778:5778 \
+  -p 16686:16686 \
+  -p 14268:14268 \
+  -p 14250:14250 \
+  -p 9411:9411 \
+  jaegertracing/all-in-one:1.21
+```
+To access jaeger UI connect to `http://localhost:16686`. The collector endpoint is `http://localhost:14268/api/traces`
+
+
 ## Context-Propagation Using Plugins
 
 Open-telemetry provides various context-propagation plugins that can integrate easily with pre-existing go packages like `otelhttp` that plugs into golang's native `net/http` package
