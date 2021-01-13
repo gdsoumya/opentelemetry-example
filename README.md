@@ -18,7 +18,8 @@ $ docker run -d --name jaeger \
   -p 9411:9411 \
   jaegertracing/all-in-one:1.21
 ```
-To access jaeger UI connect to `http://localhost:16686`. The collector endpoint is `http://localhost:14268/api/traces`
+- To access jaeger UI connect to `http://localhost:16686`. 
+- The collector endpoint is `http://localhost:14268/api/traces`
 
 
 ## Context-Propagation Using Plugins
