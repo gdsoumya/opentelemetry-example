@@ -21,6 +21,9 @@ $ docker run -d --name jaeger \
 - To access jaeger UI connect to `http://localhost:16686`. 
 - The collector endpoint is `http://localhost:14268/api/traces`
 
+## Run the examples
+
+All the examples are paired in a `client` - `server` fashion for eg. we a normal client/server a gql client/server and a websock client/server. To the run the client and server you can either build each one and run them using `go build` or you can directly run the client/server pair using `go run ..` 
 
 ## Context-Propagation Using Plugins
 
